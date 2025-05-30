@@ -9,11 +9,12 @@ int calculateMaxHeartRate(int age);
 int calculateTargetZone(int maxRate, float percentage);
 void printBinary(int number);
 void logToFile(int age, int restHR, int maxHR, int zones[], float percentages[], int count);
+void giveRecommendation(int zone);
 
 int main() {
     int age, restHR;
 
-    cout << "Enter your age: ";
+    cout << "Enter your age: ";    
     cin >> age;
 
     cout << "Enter your resting heart rate: ";
@@ -32,10 +33,10 @@ int main() {
         zones[i] = calculateTargetZone(maxHR, percentages[i]);
         cout << static_cast<int>(percentages[i] * 100) << "% zone: " << zones[i] << " bpm (";
         printBinary(zones[i]);
-        cout << ")" << endl;
+        cout << ") - ";
+        giveRecommendation(zones[i]);
     }
 
-    // Dosyaya kaydet
     logToFile(age, restHR, maxHR, zones, percentages, 3);
 
     return 0;
@@ -53,6 +54,16 @@ void printBinary(int number) {
     cout << bitset<8>(number);
 }
 
+// Yeni eklenen öneri fonksiyonu
+void giveRecommendation(int zone) {
+    if (zone < 100)
+        cout << "Low intensity - suitable for warm-up." << endl;
+    else if (zone < 140)
+        cout << "Moderate intensity - good for fat burning." << endl;
+    else
+        cout << "High intensity - suitable for endurance training." << endl;
+}
+
 void logToFile(int age, int restHR, int maxHR, int zones[], float percentages[], int count) {
     ofstream file("heart_log.txt", ios::app);
     if (!file) {
@@ -65,7 +76,14 @@ void logToFile(int age, int restHR, int maxHR, int zones[], float percentages[],
 
     for (int i = 0; i < count; i++) {
         file << static_cast<int>(percentages[i] * 100) << "%: " << zones[i] << " bpm ("
-             << bitset<8>(zones[i]) << ")" << endl;
+             << bitset<8>(zones[i]) << ") - ";
+        if (zones[i] < 100)
+            file << "Low intensity - suitable for warm-up.";
+        else if (zones[i] < 140)
+            file << "Moderate intensity - good for fat burning.";
+        else
+            file << "High intensity - suitable for endurance training.";
+        file << endl;
     }
 
     file << "---------------------------" << endl;
