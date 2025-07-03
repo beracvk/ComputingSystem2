@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <bitset>
+#include <limits>
 
 using namespace std;
 
@@ -12,19 +13,26 @@ void logToFile(int age, int restHR, int maxHR, int zones[], float percentages[],
 void giveRecommendation(int zone);
 
 int main() {
-    int age, restHR;
+    int age = 0, restHR = 0;
 
-    cout << "Enter your age: ";    
-    cin >> age;
+    cout << "Enter your age: ";
+    while (!(cin >> age) || age <= 0 || age >= 120) {
+        cout << "Invalid input. Please enter a valid age between 1 and 120: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
 
     cout << "Enter your resting heart rate: ";
-    cin >> restHR;
+    while (!(cin >> restHR) || restHR <= 0 || restHR >= 200) {
+        cout << "Invalid input. Please enter a valid resting heart rate between 1 and 200: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
 
     int maxHR = calculateMaxHeartRate(age);
-    cout << "\nYour maximum heart rate is: " << maxHR << endl;
+    cout << "\nYour maximum heart rate is: " << maxHR << " bpm" << endl;
 
-    // Fat Burn bölgesi için yüzdeler
-    float percentages[] = {0.50f, 0.60f, 0.70f}; 
+    float percentages[] = {0.50f, 0.60f, 0.70f};
     int zones[3];
 
     cout << "Fat Burn Zone (50% - 70%):" << endl;
@@ -54,7 +62,7 @@ void printBinary(int number) {
     cout << bitset<8>(number);
 }
 
-// Yeni eklenen öneri fonksiyonu
+// Egzersiz yoğunluğu öneri fonksiyonu
 void giveRecommendation(int zone) {
     if (zone < 100)
         cout << "Low intensity - suitable for warm-up." << endl;
@@ -66,7 +74,7 @@ void giveRecommendation(int zone) {
 
 void logToFile(int age, int restHR, int maxHR, int zones[], float percentages[], int count) {
     ofstream file("heart_log.txt", ios::app);
-    if (!file) {
+    if (!file.is_open()) {
         cerr << "Error opening file!" << endl;
         return;
     }
